@@ -1,33 +1,35 @@
 name: Apptainer Build Deploy
 
-on:
+on: # add when to build the container (advice: only on pull request to develop/main/master)
   pull_request:
   push:
     branches: [master, main]
 
-jobs:
+jobs: # specify what to do in the workflow and where it runs
   build-test-container:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # run on a Ubuntu system
     permissions:
       contents: read
       packages: write
 
-    container:
-        image: ghcr.io/apptainer/apptainer:1.4.1
+    container: # the container build runs inside a container which already has apptainer installed
+        image: ghcr.io/apptainer/apptainer:1.4.5
         options: --privileged
 
     name: Build Container
-    steps:
+    steps: # specify the single steps
 
       - name: Check out code for the container builds
         uses: actions/checkout@v4
 
       - name: Build Container
-        run: |
-           apptainer build container.sif example.def
-
+      # adapt run script to build the container (change name of the container and add the path where the def file is located on the Github)
+        run: | 
+           apptainer build container.sif example.def  
+           
       - name: Login and Deploy Container
         # Use default registry user ${{ github.repository_owner }} , or set a secret ${{ secrets.GHCR_USERNAME }}
+        # it should already work like this
         run: |
            echo ${{ secrets.GITHUB_TOKEN }} | apptainer registry login -u ${{ github.repository_owner }} --password-stdin oras://ghcr.io
            apptainer push container.sif oras://ghcr.io/${GITHUB_REPOSITORY}:${tag}
