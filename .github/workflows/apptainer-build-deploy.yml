@@ -31,5 +31,5 @@ jobs: # specify what to do in the workflow and where it runs
         # Use default registry user ${{ github.repository_owner }} , or set a secret ${{ secrets.GHCR_USERNAME }}
         # it should already work like this
         run: |
-           echo ${{ secrets.GITHUB_TOKEN }} | apptainer registry login -u ${{ github.repository_owner }} --password-stdin oras://docker.io
+           echo ${{ secrets.DOCKERHUB_TOKEN }} | apptainer registry login -u julehmann --password-stdin oras://docker.io
            apptainer push container.sif oras://docker.io/julehmann/test_apptainer_upload:${tag}
